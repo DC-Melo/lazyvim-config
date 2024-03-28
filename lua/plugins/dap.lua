@@ -107,6 +107,7 @@ return {
       end
     end,
   },
+
   {
     "nvim-treesitter/nvim-treesitter",
     opts = function(_, opts)
@@ -114,16 +115,26 @@ return {
       vim.list_extend(opts.ensure_installed, { "java" })
     end,
   },
+
   {
     "williamboman/mason.nvim",
-    opts = function(_, opts)
-      opts.ensure_installed = opts.ensure_installed or {}
-      vim.list_extend(
-        opts.ensure_installed,
-        { "java-test", "java-debug-adapter", "goimports", "gofumpt", "gomodifytags", "impl", "delve" }
-      )
-    end,
+    opts = {
+      ensure_installed = {
+        "stylua",
+        "shellcheck",
+        "shfmt",
+        "flake8",
+        "java-test",
+        "java-debug-adapter",
+        "goimports",
+        "gofumpt",
+        "gomodifytags",
+        "impl",
+        "delve",
+      },
+    },
   },
+
   {
     "neovim/nvim-lspconfig",
     opts = {
