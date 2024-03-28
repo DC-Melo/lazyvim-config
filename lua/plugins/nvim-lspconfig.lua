@@ -1,98 +1,90 @@
--- since this is just an example spec, don't actually load anything here and return an empty spec
--- stylua: ignore
-
--- if true then return {} end
-
--- every spec file under the "plugins" directory will be loaded automatically by lazy.nvim
---
--- In your plugin files, you can:
--- * add extra plugins
--- * disable/enabled LazyVim plugins
--- * override the configuration of LazyVim plugins
-return {
-  -- {
-  --   "neovim/nvim-lspconfig",
-  --   opts = {
-  --     -- make sure mason installs the server
-  --     servers = {
-  --       jdtls = {},
-  --     },
-  --     setup = {
-  --       jdtls = function()
-  --         return true -- avoid duplicate servers
-  --       end,
-  --     },
-  --   },
-  -- }
-  {
-    "neovim/nvim-lspconfig",
-    opts = {
-      servers = {
-        gopls = {
-          keys = {
-            -- Workaround for the lack of a DAP strategy in neotest-go: https://github.com/nvim-neotest/neotest-go/issues/12
-            { "<leader>td", "<cmd>lua require('dap-go').debug_test()<CR>", desc = "Debug Nearest (Go)" },
-          },
-          settings = {
-            gopls = {
-              gofumpt = true,
-              codelenses = {
-                gc_details = false,
-                generate = true,
-                regenerate_cgo = true,
-                run_govulncheck = true,
-                test = true,
-                tidy = true,
-                upgrade_dependency = true,
-                vendor = true,
-              },
-              hints = {
-                assignVariableTypes = true,
-                compositeLiteralFields = true,
-                compositeLiteralTypes = true,
-                constantValues = true,
-                functionTypeParameters = true,
-                parameterNames = true,
-                rangeVariableTypes = true,
-              },
-              analyses = {
-                fieldalignment = true,
-                nilness = true,
-                unusedparams = true,
-                unusedwrite = true,
-                useany = true,
-              },
-              usePlaceholders = true,
-              completeUnimported = true,
-              staticcheck = true,
-              directoryFilters = { "-.git", "-.vscode", "-.idea", "-.vscode-test", "-node_modules" },
-              semanticTokens = true,
-            },
-          },
-        },
-      },
-      setup = {
-        gopls = function(_, opts)
-          -- workaround for gopls not supporting semanticTokensProvider
-          -- https://github.com/golang/go/issues/54531#issuecomment-1464982242
-          LazyVim.lsp.on_attach(function(client, _)
-            if client.name == "gopls" then
-              if not client.server_capabilities.semanticTokensProvider then
-                local semantic = client.config.capabilities.textDocument.semanticTokens
-                client.server_capabilities.semanticTokensProvider = {
-                  full = true,
-                  legend = {
-                    tokenTypes = semantic.tokenTypes,
-                    tokenModifiers = semantic.tokenModifiers,
-                  },
-                  range = true,
-                }
-              end
-            end
-          end)
-          -- end workaround
-        end,
-      },
-    },
-  }
-}
+if true then
+  return {}
+end
+-- return {
+--   -- {
+--   --   "neovim/nvim-lspconfig",
+--   --   opts = {
+--   --     -- make sure mason installs the server
+--   --     servers = {
+--   --       jdtls = {},
+--   --     },
+--   --     setup = {
+--   --       jdtls = function()
+--   --         return true -- avoid duplicate servers
+--   --       end,
+--   --     },
+--   --   },
+--   -- }
+--   {
+--     "neovim/nvim-lspconfig",
+--     opts = {
+--       servers = {
+--         gopls = {
+--           keys = {
+--             -- Workaround for the lack of a DAP strategy in neotest-go: https://github.com/nvim-neotest/neotest-go/issues/12
+--             { "<leader>td", "<cmd>lua require('dap-go').debug_test()<CR>", desc = "Debug Nearest (Go)" },
+--           },
+--           settings = {
+--             gopls = {
+--               gofumpt = true,
+--               codelenses = {
+--                 gc_details = false,
+--                 generate = true,
+--                 regenerate_cgo = true,
+--                 run_govulncheck = true,
+--                 test = true,
+--                 tidy = true,
+--                 upgrade_dependency = true,
+--                 vendor = true,
+--               },
+--               hints = {
+--                 assignVariableTypes = true,
+--                 compositeLiteralFields = true,
+--                 compositeLiteralTypes = true,
+--                 constantValues = true,
+--                 functionTypeParameters = true,
+--                 parameterNames = true,
+--                 rangeVariableTypes = true,
+--               },
+--               analyses = {
+--                 fieldalignment = true,
+--                 nilness = true,
+--                 unusedparams = true,
+--                 unusedwrite = true,
+--                 useany = true,
+--               },
+--               usePlaceholders = true,
+--               completeUnimported = true,
+--               staticcheck = true,
+--               directoryFilters = { "-.git", "-.vscode", "-.idea", "-.vscode-test", "-node_modules" },
+--               semanticTokens = true,
+--             },
+--           },
+--         },
+--       },
+--       setup = {
+--         gopls = function(_, opts)
+--           -- workaround for gopls not supporting semanticTokensProvider
+--           -- https://github.com/golang/go/issues/54531#issuecomment-1464982242
+--           LazyVim.lsp.on_attach(function(client, _)
+--             if client.name == "gopls" then
+--               if not client.server_capabilities.semanticTokensProvider then
+--                 local semantic = client.config.capabilities.textDocument.semanticTokens
+--                 client.server_capabilities.semanticTokensProvider = {
+--                   full = true,
+--                   legend = {
+--                     tokenTypes = semantic.tokenTypes,
+--                     tokenModifiers = semantic.tokenModifiers,
+--                   },
+--                   range = true,
+--                 }
+--               end
+--             end
+--           end)
+--           -- end workaround
+--         end,
+--       },
+--     },
+--   },
+-- }
