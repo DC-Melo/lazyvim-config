@@ -12,8 +12,9 @@ map("n", "<leader>gc", "<cmd>HopChar2<cr>", { desc = "HopChar2" })
 
 map("n", "<leader>wx", "<cmd>quit<cr>", { desc = "window quit" })
 map("n", "<leader>wo", "<cmd>Outline<cr>", { desc = "Toggle outline" })
+map("n", "<leader>ww", "<cmd>lua w3mToggle()<CR>", { desc = "w3m search" })
 
-map("v", "<leader>ww", '"vy<cmd>lua _w3m_toggle(get_visual_selection())<CR>', { desc = "w3m search" })
+map("v", "<leader>ww", '"vy<cmd>lua w3mToggle(get_visual_selection())<CR>', { desc = "w3m search" })
 -- "vy<cmd>call writefile(getreg('v', 1, 1), $HOME.'/.config/reg/filev')  <cr>",
 map(
   "v",
@@ -61,7 +62,7 @@ local w3m = Terminal:new({
     vim.cmd("startinsert!")
   end,
 })
-function _w3m_toggle(text)
+function w3mToggle(text)
   if text == nil or text == "" then
     w3m.cmd = "w3m -B"
   else

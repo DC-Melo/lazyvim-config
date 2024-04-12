@@ -1,7 +1,8 @@
-" set
+" autocmd script
+autocmd BufNewFile,BufRead *.puml set filetype=markdown
 
+" terminal
 autocmd TermEnter term://*toggleterm#* tnoremap <silent><c-t> <Cmd>exe v:count1 . "ToggleTerm"<CR>
-
 " By applying the mappings this way you can pass a count to your
 " mapping to open a specific window.
 " For example: 2<C-t> will open terminal 2
@@ -35,7 +36,6 @@ cabbrev unqhis  :%!sort -t ';' -k2 <Bar> g/^: \d\{10}:\d;\(.*\)\s*\n: \d\{10}:\d
 " Binary
 " Org
 """"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
-autocmd BufNewFile,BufRead *.puml set filetype=markdown
 vnoremap <C-t> :Tabularize/\|<CR>
 imap <C-o> <esc>O
 imap <C-j> <esc>o
@@ -43,6 +43,9 @@ imap <C-l> <Right>
 imap <C-h> <Left>
 cmap <C-p> <Up>
 cmap <C-n> <Down>
+cnoremap <C-A> <Home>
+cnoremap <C-F> <Right>
+cnoremap <C-B> <Left>
 inoremap <C-p> <Up>
 inoremap <C-n> <Down>
 
