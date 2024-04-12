@@ -1,3 +1,13 @@
+" set
+
+autocmd TermEnter term://*toggleterm#* tnoremap <silent><c-t> <Cmd>exe v:count1 . "ToggleTerm"<CR>
+
+" By applying the mappings this way you can pass a count to your
+" mapping to open a specific window.
+" For example: 2<C-t> will open terminal 2
+nnoremap <silent><c-t> <Cmd>exe v:count1 . "ToggleTerm"<CR>
+inoremap <silent><c-t> <Esc><Cmd>exe v:count1 . "ToggleTerm"<CR>
+
 """"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 " nvim help command
 """"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
@@ -17,21 +27,40 @@ cabbrev unqhis  :%!sort -t ';' -k2 <Bar> g/^: \d\{10}:\d;\(.*\)\s*\n: \d\{10}:\d
 " basic shortcut
 " Using CTRL + V signals Vim that it should take the next character literally. Even in insert mode.
 " input ^M ctrl+v and enter
+" Normal
+" Insert
+" Visual
+" Command-line
+" Replace
+" Binary
+" Org
 """"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 autocmd BufNewFile,BufRead *.puml set filetype=markdown
 vnoremap <C-t> :Tabularize/\|<CR>
-inoremap <C-l> <Right>
-inoremap <C-h> <Left>
-inoremap <C-k> <Up>
-inoremap <C-j> <Down>
-imap     <C-o> <esc>o
-cmap     <C-p> <Up>
-cmap     <C-n> <Down>
+imap <C-o> <esc>O
+imap <C-j> <esc>o
+imap <C-l> <Right>
+imap <C-h> <Left>
+cmap <C-p> <Up>
+cmap <C-n> <Down>
+inoremap <C-p> <Up>
+inoremap <C-n> <Down>
+
 " nmap     <C-g> :tabe<CR>:-tabmove<CR>:term lazygit<CR>
 " nnoremap <silent> <leader>gg :cd %:p:h <Bar> LazyGit<CR>
 " nnoremap <silent> <leader>gg :LazyGit<CR>
 " cabbrev ter  split <Bar> resize 10 <Bar> terminal
 " inoremap dts <c-r>=strftime('%s')<CR>
+"
+vnoremap <silent> <leader>gg :LazyGit<CR>
+vnoremap <silent> <leader>yv :LazyGit<CR>
+map <C-c> y:e ~/clipsongzboard<CR>P:w !pbcopy<CR><CR>:bdelete!<CR>
+vmap <C-c> y:new ~/.vimbuf<CR>VGp:x<CR>:!pbcopy < ~/.vimbuf<CR><CR>
+
+"the c-u does a union of all lines in visual selection.
+"this goes in the vimrc
+
+
 
 """"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 " vim to terminal
@@ -66,7 +95,7 @@ cabbrev ts2local ConvertDate 2
 cabbrev local2ts ConvertDate 3
 cabbrev tsms2utc %s/\(\D\?1\d\{9}\)\d\d\d\(\D\?\)/\=trim(system('dateconv --sed-mode --input-format="%s" --format="%Y-%m-%d %H:%M:%S" <<< "'.submatch(1).'"'))/gc
 cabbrev diff2 tabnew % <Bar> windo diffthis <Bar> :vert diffsplit f
-
+cabbrev bufonly %bd <Bar> e#
 
 
 cabbrev rev  g/^/m0
@@ -94,7 +123,7 @@ cabbrev lfw   LoadImage2Markdown 1  name
 :command!   -nargs=* AppendImage             : call AppendImage(<f-args>)
 :command!   -nargs=* BatchCommand             : call BatchCommand(<f-args>)
 
-command!   -nargs=* FormatText2GifScript call FormatText2GifScript(<f-args>)
+" command!   -nargs=* FormatText2GifScript call FormatText2GifScript(<f-args>)
 command!   -nargs=* GenTemplateCode2File call GenTemplateCode2File(<f-args>)
 command!   AddTitle            : call AddTitle()
 command!   AddAuthor           : call AddAuthor()
@@ -108,7 +137,8 @@ command!   UpdateTitle         : call UpdateTitle()
 
 
 cabbrev sreg    for i in range(char2nr('a'),char2nr('z')) <Bar> :call writefile(getreg(nr2char(i), 1, 1), $HOME."/.config/reg/".nr2char(i))  <Bar> endfor 
-
+cabbrev debug   :lua require'dap'.continue()
+cabbrev cdcur   :lcd %:p:h<CR>:pwd<CR>
 cabbrev pdate   :put=strftime('%F')
 cabbrev ptime   :put=strftime('%T')
 " cabbrev pdtime  :put=strftime('%F %T')
@@ -453,7 +483,9 @@ cabbrev y2i  .write! $HOME/.config/reg/filei
 cabbrev y2o  .write! $HOME/.config/reg/fileo
 cabbrev y2s  .write! $HOME/.config/reg/files
 cabbrev y2c  .write! $HOME/.config/reg/filec
-cabbrev y2v   call writefile(getreg('"', 1, 1), $HOME."/.config/reg/filev")
+" cabbrev y2v   call writefile(getreg('"', 1, 1), $HOME."/.config/reg/filev")
+cabbrev y2v  Y2v
+command!   -range=% -nargs=* Y2v <line1>,<line2> :call Save_visually_selected_text_to_file(<f-args>)
 " add to
 cabbrev a2y  write! >> $HOME/.config/reg/filey
 cabbrev a2f  write! >> $HOME/.config/reg/filef
@@ -475,6 +507,7 @@ cabbrev p4l  r $HOME/.config/reg/filel
 cabbrev p4r  r $HOME/.config/reg/filer
 cabbrev p4t  r $HOME/.config/reg/filet.txt
 cabbrev p4s  r $HOME/.config/reg/files
+cabbrev p4x  r $HOME/.config/reg/filex
 cabbrev e4tn :let $newTempFile='/tmp/'.trim(system('date +%Y%m%d_%H%M%S')) \| e $newTempFile
 cabbrev p4tl :let $lastTempFile='/tmp/'.trim(system('ls -tU /tmp/ \| head -1 \| tail -1 ')) \| r $lastTempFile
 cabbrev e4tl :let $lastTempFile='/tmp/'.trim(system('ls -tU /tmp/ \| head -1 \| tail -1 ')) \| e $lastTempFile
@@ -486,8 +519,11 @@ cabbrev p4w  PasteFromFile /tmp/www 1 1
 cabbrev p4h  r! tail -1 ~/.config/zshenv/zshhi.sh
 
 " past from clipboard
-cabbrev p4x  r!xsel -o -b
+" cabbrev p4c  r!xsel -o -b
+cabbrev p4c  r!xsel --clipboard --output
 
+cabbrev mdpv  :let g:mkdp_port='8889' <Bar> MarkdownPreview
+cabbrev des  :s/ *\\//g
 
 """"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 " vim to chrome/canary
@@ -819,10 +855,14 @@ cabbrev tske :execute 'edit ' . "$BLOG_HOME/" . trim(system("task _get 75.uuid")
 " cabbrev his    r!echo "history 10" \| bash -i 2>/dev/null \| sed -e 's/\x1b\[.//g'
 cabbrev mh0    s/^\s*#*\s*\(.\{-}\)\s\+#\+\s*$/\1/g <Bar> :noh
 cabbrev mh0    s/^\s*#*\s*\(.\{-}\)\s*#*\s*$/\1/g <Bar> :noh
-cabbrev mh1    s/^\s*\(.\{-}\)\s*$/# \1 #/g <Bar> :noh
-cabbrev mh2    s/^\s*\(.\{-}\)\s*$/## \1 ##/g <Bar> :noh
-cabbrev mh3    s/^\s*\(.\{-}\)\s*$/### \1 ###/g <Bar> :noh
-cabbrev mh4    s/^\s*\(.\{-}\)\s*$/#### \1 ####/g <Bar> :noh
+cabbrev mh1    s/^\s*\(.\{-}\)\s*$/# \1/g <Bar> :noh
+cabbrev mh2    s/^\s*\(.\{-}\)\s*$/## \1/g <Bar> :noh
+cabbrev mh3    s/^\s*\(.\{-}\)\s*$/### \1/g <Bar> :noh
+cabbrev mh4    s/^\s*\(.\{-}\)\s*$/#### \1/g <Bar> :noh
+" cabbrev mh1    s/^\s*\(.\{-}\)\s*$/# \1 #/g <Bar> :noh
+" cabbrev mh2    s/^\s*\(.\{-}\)\s*$/## \1 ##/g <Bar> :noh
+" cabbrev mh3    s/^\s*\(.\{-}\)\s*$/### \1 ###/g <Bar> :noh
+" cabbrev mh4    s/^\s*\(.\{-}\)\s*$/#### \1 ####/g <Bar> :noh
 
 cabbrev mb0    s#^[\#\*\.+\-~\_> 0-9]*\(.\{-}\)\s*[\#\*\_~]*$#\1#g <Bar> :noh
 cabbrev mb1    s#^[\#\*\.+\-~\_> 0-9]*\(.\{-}\)\s*[\#]*$#\1  #g <Bar> :noh
@@ -4003,6 +4043,7 @@ endfunct
 
 
 
+" @deprecate
 function! TerminalOpen() abort
   let l:termListExist=filter(map(getbufinfo(), 'v:val.bufnr'), 'getbufvar(v:val, "&buftype") is# "terminal"')
   let l:termListOpen=uniq(map(filter(getwininfo(), 'v:val.terminal'), 'v:val.bufnr'))
@@ -4016,10 +4057,33 @@ function! TerminalOpen() abort
 endfunction
 
 
-
+"@deprcate"
 function! TerminalDelete() abort
   let l:termList=filter(map(getbufinfo(), 'v:val.bufnr'), 'getbufvar(v:val, "&buftype") is# "terminal"')
     for i in termList
       execute i . "bdelete! "
     endfor
 endfunction
+
+
+function! Get_visual_selection()
+  "get the position of left start visual selection
+  let [line_start, column_start] = getpos("'<")[1:2]
+  "get the position of right end visual selection
+  let [line_end, column_end] = getpos("'>")[1:2]
+  "gotta catch them all.
+  let lines = getline(line_start, line_end)
+  if len(lines) == 0
+    return ''
+  endif
+  "edge cases and cleanup.
+  let lines[-1] = lines[-1][: column_end - 2]
+  let lines[0] = lines[0][column_start - 1:]
+  return join(lines, "\n")
+endfunction
+
+function Save_visually_selected_text_to_file()
+  let selected_text = Get_visual_selection()
+  call writefile(split(selected_text, "\n"), $HOME . "/.config/reg/filev")
+endfunction
+

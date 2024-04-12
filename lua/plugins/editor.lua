@@ -16,4 +16,5 @@ return {
       require("hop").setup()
     end,
   },
+  { "akinsho/toggleterm.nvim", version = "*", config = true },
 }
