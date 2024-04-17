@@ -1,7 +1,21 @@
+" FIX:= {                                                                                                       
+"   icon = " ", -- icon used for the sign, and in search results                                               
+"   color = "error", -- can be a hex color, or a named color (see below)                                        
+"   alt = { "FIXME", "BUG", "FIXIT", "ISSUE" }, -- a set of other keywords that all map to this FIX keywords    
+"   -- signs = false, -- configure signs for some keywords individually                                         
+" },                                                                                                            
+" TODO:= { icon = " ", color = "info" },                                                                       
+" HACK:= { icon = " ", color = "warning" },                                                                    
+" WARN:= { icon = " ", color = "warning", alt = { "WARNING", "XXX" } },                                        
+" PERF:= { icon = " ", alt = { "OPTIM", "PERFORMANCE", "OPTIMIZE" } },                                         
+" NOTE:= { icon = " ", color = "hint", alt = { "INFO" } },                                                     
+" TEST:= { icon = "⏲ ", color = "test", alt = { "TESTING", "PASSED", "FAILED" } },                              
+
 """"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 " autocmd script
 """"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 autocmd BufNewFile,BufRead *.puml set filetype=markdown
+
 
 """"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 " terminal
@@ -27,7 +41,8 @@ inoremap <silent><c-t> <Esc><Cmd>exe v:count1 . "ToggleTerm"<CR>
 " cabbrev unqhis  :%s/\\$\n/\\§/g <Bar> %!sort -t ";" -k2 <Bar> %g/^: \d\{10}:\d;\(.*\)\s*\n: \d\{10}:\d;\1\s*\n/d <Bar> %g/§/m$ <Bar> %s/\\§/\\\r/g
 " uniq history
 cabbrev unqhis  :%!sort -t ';' -k2 <Bar> g/^: \d\{10}:\d;\(.*\)\s*\n: \d\{10}:\d;\1\s*$/d
-
+cabbrev hmin  horizontal resize 10
+cabbrev hmax  horizontal resize 100
 """"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 " basic shortcut
 " Using CTRL + V signals Vim that it should take the next character literally. Even in insert mode.
@@ -40,6 +55,13 @@ cabbrev unqhis  :%!sort -t ';' -k2 <Bar> g/^: \d\{10}:\d;\(.*\)\s*\n: \d\{10}:\d
 " Binary
 " Org
 """"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+tnoremap <C-k> <C-k>
+tnoremap <C-h> <C-h>
+tnoremap <C-l> <C-l>
+cnoremap <C-a> <Home>
+cnoremap <C-f> <Right>
+cnoremap <C-b> <Left>
+cnoremap <C-k> <C-k>
 vnoremap <C-t> :Tabularize/\|<CR>
 imap <C-o> <esc>O
 imap <C-j> <esc>o
@@ -47,11 +69,18 @@ imap <C-l> <Right>
 imap <C-h> <Left>
 cmap <C-p> <Up>
 cmap <C-n> <Down>
-cnoremap <C-A> <Home>
-cnoremap <C-F> <Right>
-cnoremap <C-B> <Left>
 inoremap <C-p> <Up>
 inoremap <C-n> <Down>
+cabbrev exr exec "TermExec cmd='".getreg("c")."'"
+" cabbrev execln exec "TermExec cmd='".trim(trim(getline("."),"❯ "),"$ ")."'"
+cabbrev exl exec "TermExec cmd='".trim(getline("."),"[#❯$>\|] ")."'"
+cabbrev exc  TermExec cmd=""
+cabbrev abq  put _ <Bar> call append(line("'<")-1,"```") <Bar> call append(line("'>"),"```")
+cabbrev abqs  put _ <Bar> call append(line("'<")-1,"```sh") <Bar> call append(line("'>"),"```")
+
+" make sure ctrl+k can kill line
+" nnoremap ZZ            <Cmd>call TerminalDelete() <Bar> wqa<CR>
+
 
 " nmap     <C-g> :tabe<CR>:-tabmove<CR>:term lazygit<CR>
 " nnoremap <silent> <leader>gg :cd %:p:h <Bar> LazyGit<CR>
@@ -96,21 +125,22 @@ inoremap <C-n> <Down>
 
 :command!   -range=% -nargs=* Snip call AIC(<f-args>)
 cabbrev aic      r! ai -c 
+
 cabbrev ts2utc   ConvertDate 0
+cabbrev tsms2utc %s/\(\D\?1\d\{9}\)\d\d\d\(\D\?\)/\=trim(system('dateconv --sed-mode --input-format="%s" --format="%Y-%m-%d %H:%M:%S" <<< "'.submatch(1).'"'))/gc
 cabbrev utc2ts   ConvertDate 1
 cabbrev ts2local ConvertDate 2
 cabbrev local2ts ConvertDate 3
-cabbrev tsms2utc %s/\(\D\?1\d\{9}\)\d\d\d\(\D\?\)/\=trim(system('dateconv --sed-mode --input-format="%s" --format="%Y-%m-%d %H:%M:%S" <<< "'.submatch(1).'"'))/gc
+
 cabbrev diff2 tabnew % <Bar> windo diffthis <Bar> :vert diffsplit f
-cabbrev bufonly %bd <Bar> e#
-
-
+cabbrev bonly %bd <Bar> e#
 cabbrev rev  g/^/m0
 
 :command!   -nargs=* LoadImage2Markdown      : call LoadImage2Markdown(<f-args>)
 cabbrev lfc   LoadImage2Markdown -1 name 
 cabbrev lfg   LoadImage2Markdown 0  name 
 cabbrev lfw   LoadImage2Markdown 1  name 
+
 :command!   -nargs=* CopyLinkFile2clipboard  : call CopyLinkFile2clipboard(<f-args>)
 :command!   -nargs=* ConvMarkdown2clipboard  : call ConvMarkdown2clipboard(<f-args>)
 :command!   -nargs=* ConvMarkdown2lark  : call ConvMarkdown2lark(<f-args>)
@@ -176,6 +206,7 @@ cabbrev avq  s/^\\|$/"/g  <Bar> :noh
 cabbrev avs  s/\(\S.*\)$\n\(\s*\S\)/\1 \\\r\2/g  <Bar> :noh
 cabbrev dvs  s/ \\$//g  <Bar> :noh
 " global pattern write to file
+
 cabbrev gsv  g/^BEGIN:VCARD/,/^END:VCARD/write! ~/.contacts/friends/`uuidgen`.vcf
 
 
@@ -475,6 +506,7 @@ cabbrev yfd   call writefile([expand("%:p:h")], $HOME."/.config/reg/filep") <Bar
 " yark the path
 cabbrev ypwd  call writefile([getcwd()], $HOME."/.config/reg/filep")        <Bar> call system('printf "'. getcwd() . '" \|pbcopy')
 " copy to register
+cabbrev yr2  call writefile(getreg('"', 1, 1), $HOME."/.config/reg/filer")
 cabbrev y2r  call system('xsel -i -b ', @")
 " copy to clipboard
 cabbrev y2x  .write !xsel -i -b
@@ -482,6 +514,7 @@ cabbrev y2x  .write !xsel -i -b
 " yark to tmp
 cabbrev y2t  .write! /tmp/`uuidgen`.md
 " yark to
+cabbrev y2e  .write! $HOME/.config/reg/filee
 cabbrev y2y  .write! $HOME/.config/reg/filey
 cabbrev y2f   write! $HOME/.config/reg/filef
 cabbrev y2l  .write! $HOME/.config/reg/filel
@@ -515,6 +548,7 @@ cabbrev p4r  r $HOME/.config/reg/filer
 cabbrev p4t  r $HOME/.config/reg/filet.txt
 cabbrev p4s  r $HOME/.config/reg/files
 cabbrev p4x  r $HOME/.config/reg/filex
+cabbrev p4v  r $HOME/.config/reg/filev
 cabbrev e4tn :let $newTempFile='/tmp/'.trim(system('date +%Y%m%d_%H%M%S')) \| e $newTempFile
 cabbrev p4tl :let $lastTempFile='/tmp/'.trim(system('ls -tU /tmp/ \| head -1 \| tail -1 ')) \| r $lastTempFile
 cabbrev e4tl :let $lastTempFile='/tmp/'.trim(system('ls -tU /tmp/ \| head -1 \| tail -1 ')) \| e $lastTempFile
@@ -1580,9 +1614,9 @@ function! UmlRun(...) range
   if len(l:paras)>0
     let l:name=l:paras[0] .'_uml'
   endif
-  let l:outPlantuml = expand("%:p:h") . '/docs/media/' . l:name . l:timestamp .'.puml'
+  let l:outPlantuml = expand("%:p:h") . '/doc/media/' . l:name . l:timestamp .'.puml'
   " echo l:outPlantuml
-  let l:outImage = 'docs/media/' . l:name . l:timestamp .'.png'
+  let l:outImage = 'doc/media/' . l:name . l:timestamp .'.png'
   " echo l:outImage
   :call writefile(getline(a:firstline, a:lastline),  l:outPlantuml)
   let l:commandString=join(split('java -DPLANTUML_LIMIT_SIZE=8192 -jar $TOOLS_HOME/bin/plantuml.jar -charset UTF-8 ' . l:outPlantuml ),' ')
@@ -1592,7 +1626,7 @@ function! UmlRun(...) range
 endfunction
 
 function! UmlGet()
-  let s:file = matchstr(getline("."), 'docs\/media\/[^ >,;()|｜]*')
+  let s:file = matchstr(getline("."), 'doc\/media\/[^ >,;()|｜]*')
   if s:file != ""
     echo "plantuml '".expand("%:p:h") ."/" . s:file."'"
     let l:outImage = expand("%:p:h") ."/" . s:file
@@ -2947,11 +2981,11 @@ function! LoadImage2Markdown(...)
         let l:sourceIndex=str2nr(l:paras[0])
         " echom "答应值".l:sourceIndex
     endif
-    let l:sourceFolder="$HOME/Documents/grid_image"
+    let l:sourceFolder="$HOME/Pictures/grid_image"
     if l:sourceIndex<=0
-      let l:sourceFolder="$HOME/Documents/grid_image"
+      let l:sourceFolder="$HOME/Pictures/grid_image"
     else
-      let l:sourceFolder="$HOME/Documents/Screenshots".l:sourceIndex
+      let l:sourceFolder="$HOME/Pictures/Screenshots".l:sourceIndex
     endif
 
     let l:name=""
@@ -2974,9 +3008,9 @@ function! LoadImage2Markdown(...)
     echom l:copyFileName
     let l:extName=trim(fnamemodify(l:copyFileName, ":e"))
     " let l:fileNamePath=l:sourceFolder.l:copyFileName
-    let l:lnFileNamePath=l:fileDir.'/docs/media/'.l:fileName. '.'.l:extName
-    " echom l:fileDir."/docs/media/"
-    :call mkdir(l:fileDir."/docs/media/", "p")
+    let l:lnFileNamePath=l:fileDir.'/doc/media/'.l:fileName. '.'.l:extName
+    " echom l:fileDir."/doc/media/"
+    :call mkdir(l:fileDir."/doc/media/", "p")
     " let l:commandString=join(split('cp '. l:copyFileName.' '.l:lnFileNamePath),' ')
     if l:sourceIndex==-1
       let l:commandString=join(split('pngpaste '.l:lnFileNamePath ),' ')
@@ -2998,7 +3032,7 @@ function! LoadImage2Markdown(...)
         echom l:commandString
         :call system(l:commandString)
     endif
-    :call append(line('.'), ['!['.l:name.'](docs/media/'.l:fileName.'.'.l:extName.')'])
+    :call append(line('.'), ['!['.l:name.'](doc/media/'.l:fileName.'.'.l:extName.')'])
 endfunction
 
 """"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
@@ -3046,7 +3080,7 @@ function! ConvMarkdown2lark(...)
 				" 处理.larksuite to \.larksuite
         let markdownTextFilter[i] = substitute(markdownTextFilter[i], '\.larksuite', '\\\0', 'g')
         " 处理图片
-				let markdownTextFilter[i] = substitute(markdownTextFilter[i], '\!\[\(.*\)\](\(docs.*\))', '[【\1如图】]('.fileDir . '/\2)', 'g')
+				let markdownTextFilter[i] = substitute(markdownTextFilter[i], '\!\[\(.*\)\](\(doc.*\))', '[【\1如图】]('.fileDir . '/\2)', 'g')
     endfor
     " echom markdownTextFilter
     call setreg('+',l:markdownTextFilter[0:-1])
@@ -3063,13 +3097,13 @@ function! Uml2png(umlStr)
   endif
   let l:md5=matchstr(system('echo -n '.shellescape(a:umlStr)   . '| md5sum'),'[a-zA-Z0-9]\+')
 
-  let l:filePath=l:fileDir.'/docs/media/'.md5.'.puml'
+  let l:filePath=l:fileDir.'/doc/media/'.md5.'.puml'
   let l:umlList=split(a:umlStr,'¶')
   :call writefile(l:umlList,  l:filePath )
   let l:commandString=join(split('java -DPLANTUML_LIMIT_SIZE=8192 -jar $TOOLS_HOME/bin/plantuml.jar -charset UTF-8  -computeurl ' . l:filePath ),' ')
   let l:urlcode=trim(system(commandString))
   let l:commandString=join(split('java -DPLANTUML_LIMIT_SIZE=8192 -jar $TOOLS_HOME/bin/plantuml.jar -charset UTF-8 ' . l:filePath ),' ')
-  let l:pngFile='!['.l:title.'](docs/media/'.l:md5.'.png)'
+  let l:pngFile='!['.l:title.'](doc/media/'.l:md5.'.png)'
   " let l:pngFile='!['.l:title.'](https://www.plantuml.com/plantuml/img/'.l:urlcode.')'
   " echomsg l:pngFile
   return l:pngFile
@@ -3103,8 +3137,8 @@ function! ConvMarkdown2clipboard(...)
         endif
         if markdownText[i] =~ '@enduml' || (markdownText[i] =~ '@endwbs') || (markdownText[i] =~ '@endmindmap')
           " 无需添加图片
-          " let l:outPlantuml='docs/media/'.umlName.strftime('_%y%m%d%H%M%S').".puml"
-          " let l:outImage='docs/media/'.umlName.strftime('_%y%m%d%H%M%S').".png"
+          " let l:outPlantuml='doc/media/'.umlName.strftime('_%y%m%d%H%M%S').".puml"
+          " let l:outImage='doc/media/'.umlName.strftime('_%y%m%d%H%M%S').".png"
           " call writefile(l:markdownUMLFilter, l:outPlantuml, 'a')
           " let l:commandString=join(split('java -DPLANTUML_LIMIT_SIZE=8192 -jar $TOOLS_HOME/bin/plantuml.jar -charset UTF-8 ' . l:outPlantuml ),' ')
           " call system(commandString)
@@ -3158,8 +3192,8 @@ function! GenMarkdownPlantuml(...)
   let umlArray = getline(l:lineStart, l:lineEnd)
   echom l:lineStart  l:lineEnd
 
-  let l:outPlantuml='docs/media/'.l:name .l:timestamp.'.puml'
-  let l:outImage='docs/media/'.l:name .l:timestamp.'.png'
+  let l:outPlantuml='doc/media/'.l:name .l:timestamp.'.puml'
+  let l:outImage='doc/media/'.l:name .l:timestamp.'.png'
   echom l:lineStart  l:lineEnd l:fileDir l:outPlantuml
   call writefile(l:umlArray, l:outPlantuml, 'a')
   let l:commandString=join(split('java -DPLANTUML_LIMIT_SIZE=8192 -jar $TOOLS_HOME/bin/plantuml.jar -charset UTF-8 ' . l:outPlantuml ),' ')
@@ -3193,11 +3227,11 @@ function! NewDrawio(...)
     let l:name=l:paras[0]
   endif
   let l:fileName=l:name.l:timestamp.'.drawio.png'
-  let l:commandString=join(split('cp '.l:fileDir.'/docs/media/blank.drawio.png '.l:fileDir. '/docs/media/'. l:fileName ),' ')
+  let l:commandString=join(split('cp '.l:fileDir.'/doc/media/blank.drawio.png '.l:fileDir. '/doc/media/'. l:fileName ),' ')
   echom l:commandString
   :call system(l:commandString)
-  :call append(line('.'), ['!['.l:name.'](docs/media/'.l:fileName.')'])
-  let l:commandString=join(split('/Applications/draw.io.app/Contents/MacOS/draw.io '.l:fileDir.'/docs/media/'. l:fileName),' ')
+  :call append(line('.'), ['!['.l:name.'](doc/media/'.l:fileName.')'])
+  let l:commandString=join(split('/Applications/draw.io.app/Contents/MacOS/draw.io '.l:fileDir.'/doc/media/'. l:fileName),' ')
   echom l:commandString
   :call system(l:commandString)
 endfunction
@@ -3223,12 +3257,12 @@ endfunction
 "       let l:name=l:paras[0]
 "     endif
 "     let l:fileName=l:name.l:timestamp.'.drawio.png'
-"     let l:commandString=join(split('cp docs/media/blank.drawio.png docs/media/'. l:fileName),' ')
-"     " let l:commandString=join(split('ln docs/media/blank.drawio.png docs/media/'. l:fileName),' ')
+"     let l:commandString=join(split('cp doc/media/blank.drawio.png doc/media/'. l:fileName),' ')
+"     " let l:commandString=join(split('ln doc/media/blank.drawio.png doc/media/'. l:fileName),' ')
 "     echom l:commandString
 "     :call system(l:commandString)
-"     :call append(line('.'), ['!['.l:name.'](docs/media/'.l:fileName.')'])
-"     let l:commandString=join(split('/Applications/draw.io.app/Contents/MacOS/draw.io '.l:fileDir.'/docs/media/'. l:fileName),' ')
+"     :call append(line('.'), ['!['.l:name.'](doc/media/'.l:fileName.')'])
+"     let l:commandString=join(split('/Applications/draw.io.app/Contents/MacOS/draw.io '.l:fileDir.'/doc/media/'. l:fileName),' ')
 "     echom l:commandString
 "     :call system(l:commandString)
 "   endif
@@ -3249,7 +3283,7 @@ function! AppendImage(...)
       let pngPathList[i] = substitute(pngPathList[i], '\!\[\(.*\)\](\(.*\))', '\2', 'g')
     endfor
 	  let l:pngsPath= join(pngPathList," ")
-		let l:outfile='docs/media/'.l:name.l:timestamp.'.png'
+		let l:outfile='doc/media/'.l:name.l:timestamp.'.png'
     let l:commandString=join(split('montage '. l:pngsPath . ' -tile ' . l:tile .' -geometry 1440x900+0+0 '.l:outfile ),' ')
     :call system(l:commandString)
     let l:commandString=join(split('mogrify -pointsize 50 -fill red -weight bolder -gravity center -annotate 0 "'. substitute(l:name, '_', ' ', 'g').'" '.l:outfile),' ')
@@ -3978,7 +4012,7 @@ endfunction
 function! OpenURL()
   let s:url = trim(matchstr(getline("."), '\[.*\](\zs.*\ze)'))
   " let s:url = matchstr(getline("."), '[a-z]*:\/\/[^ >,;()#|｜]*')
-  " let s:file = matchstr(getline("."), 'docs\/media\/[^ >,;()|｜]*')
+  " let s:file = matchstr(getline("."), 'doc\/media\/[^ >,;()|｜]*')
   if stridx(s:url, "://")  != -1
     echo "open " . s:url
     silent exec "!open '".s:url."'"
@@ -4084,7 +4118,7 @@ function! Get_visual_selection()
     return ''
   endif
   "edge cases and cleanup.
-  let lines[-1] = lines[-1][: column_end - 2]
+  let lines[-1] = lines[-1][: column_end - 1]
   let lines[0] = lines[0][column_start - 1:]
   return join(lines, "\n")
 endfunction

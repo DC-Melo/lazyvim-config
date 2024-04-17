@@ -2,19 +2,22 @@
 -- Default keymaps that are always set: https://github.com/LazyVim/LazyVim/blob/main/lua/lazyvim/config/keymaps.lua
 -- Add any additional keymaps here
 --
+
+vim.cmd("source $HOME/.config/nvim/lua/vimscript/vimrc.custom.config.rc.vim")
+vim.cmd("source $HOME/.config/nvim/lua/vimscript/tabular/autoload/tabular.vim")
+vim.cmd("source $HOME/.config/nvim/lua/vimscript/tabular/plugin/Tabular.vim")
+
 local Util = require("lazyvim.util")
 local map = Util.safe_keymap_set
 map("n", "<leader>gw", "<cmd>HopWord<cr>", { desc = "HopWord" })
 map("n", "<leader>gc", "<cmd>HopChar2<cr>", { desc = "HopChar2" })
 
--- map("n", "<leader>wt", "<cmd>call TerminalOpen()<cr>", { desc = "Terminal Toggle" })
--- map("n", "<leader>wq", "<cmd>call TerminalDelete()<cr>", { desc = "Terminal Delete" })
-
 map("n", "<leader>wx", "<cmd>quit<cr>", { desc = "window quit" })
 map("n", "<leader>wo", "<cmd>Outline<cr>", { desc = "Toggle outline" })
+map("n", "<leader>wm", "<cmd>lua muttToggle()<CR>", { desc = "mutt" })
 map("n", "<leader>ww", "<cmd>lua w3mToggle()<CR>", { desc = "w3m search" })
-
 map("v", "<leader>ww", '"vy<cmd>lua w3mToggle(get_visual_selection())<CR>', { desc = "w3m search" })
+
 -- "vy<cmd>call writefile(getreg('v', 1, 1), $HOME.'/.config/reg/filev')  <cr>",
 map(
   "v",
@@ -69,4 +72,26 @@ function w3mToggle(text)
     w3m.cmd = "w3m 'https://www.google.com/search?q=" .. text .. "'"
   end
   w3m:toggle()
+end
+
+local mutt = Terminal:new({
+  cmd = "mutt",
+  -- cmd = "w3m -B",
+  dir = "git_dir",
+  direction = "float",
+  float_opts = {
+    border = "double",
+  },
+  -- function to run on opening the terminal
+  on_open = function(term)
+    vim.cmd("startinsert!")
+    vim.api.nvim_buf_set_keymap(term.bufnr, "n", "q", "<cmd>close<CR>", { noremap = true, silent = true })
+  end,
+  -- function to run on closing the terminal
+  on_close = function(term)
+    vim.cmd("startinsert!")
+  end,
+})
+function muttToggle()
+  mutt:toggle()
 end
