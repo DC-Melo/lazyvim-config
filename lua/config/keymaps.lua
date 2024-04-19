@@ -6,6 +6,7 @@
 vim.cmd("source $HOME/.config/nvim/lua/vimscript/vimrc.custom.config.rc.vim")
 vim.cmd("source $HOME/.config/nvim/lua/vimscript/tabular/autoload/tabular.vim")
 vim.cmd("source $HOME/.config/nvim/lua/vimscript/tabular/plugin/Tabular.vim")
+vim.cmd("source /home/dc/.config/nvim/lua/vimscript/VisIncr/visincrPlugin.vim")
 
 local Util = require("lazyvim.util")
 local map = Util.safe_keymap_set

@@ -23,7 +23,7 @@ require("lazy").setup({
     { import = "lazyvim.plugins.extras.coding.codeium" },
     -- { import = "lazyvim.plugins.extras.coding.copilot" }, -- need money same with codeium
     { import = "lazyvim.plugins.extras.editor.leap" },
-    { import = "lazyvim.plugins.extras.editor.dial" },
+    -- { import = "lazyvim.plugins.extras.editor.dial" }, -- work not propeyly
     { import = "lazyvim.plugins.extras.editor.mini-diff" },
     { import = "lazyvim.plugins.extras.editor.mini-move" },
     { import = "lazyvim.plugins.extras.editor.mini-files" },

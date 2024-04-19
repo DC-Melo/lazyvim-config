@@ -11,6 +11,8 @@
 " NOTE:= { icon = " ", color = "hint", alt = { "INFO" } },                                                     
 " TEST:= { icon = "⏲ ", color = "test", alt = { "TESTING", "PASSED", "FAILED" } },                              
 
+
+
 """"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 " autocmd script
 """"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
@@ -66,17 +68,24 @@ vnoremap <C-t> :Tabularize/\|<CR>
 imap <C-o> <esc>O
 imap <C-j> <esc>o
 imap <C-l> <Right>
+imap <C-f> <Right>
 imap <C-h> <Left>
+imap <C-b> <Left>
 cmap <C-p> <Up>
 cmap <C-n> <Down>
 inoremap <C-p> <Up>
 inoremap <C-n> <Down>
-cabbrev exr exec "TermExec cmd='".getreg("c")."'"
-" cabbrev execln exec "TermExec cmd='".trim(trim(getline("."),"❯ "),"$ ")."'"
-cabbrev exl exec "TermExec cmd='".trim(getline("."),"[#❯$>\|] ")."'"
-cabbrev exc  TermExec cmd=""
-cabbrev abq  put _ <Bar> call append(line("'<")-1,"```") <Bar> call append(line("'>"),"```")
-cabbrev abqs  put _ <Bar> call append(line("'<")-1,"```sh") <Bar> call append(line("'>"),"```")
+cabbrev exr exec   "TermExec cmd='".getreg("c")."'"
+cabbrev exl exec   "TermExec cmd='".trim(getline("."),"[#❯$>\|] ")."'"
+cabbrev exls exec  "TermExec cmd='ls -ah'"
+cabbrev exc         TermExec cmd=""
+cabbrev excd exec  "TermExec cmd='cd ..'"
+cabbrev 2exc        2TermExec cmd=""
+cabbrev 2exr exec  "2TermExec cmd='".getreg("c")."'"
+cabbrev 2exl exec  "2TermExec cmd='".trim(getline("."),"[#❯$>\|] ")."'"
+cabbrev 2exls exec "2TermExec cmd='ls -ah'"
+cabbrev 2excd exec "2TermExec cmd='cd ..'"
+cabbrev abq  put _ <Bar> call append(line("'<")-1,"```sh") <Bar> call append(line("'>"),"```") <Bar> exec "normal ".(line("'<")-1)."G"
 
 " make sure ctrl+k can kill line
 " nnoremap ZZ            <Cmd>call TerminalDelete() <Bar> wqa<CR>
@@ -496,17 +505,17 @@ cabbrev etmp  :edit $TMPDIR/`uuidgen`
 " copy yank
 cabbrev yyy  call writefile(getreg('"', 1, 1), $HOME."/.config/reg/filer")  \| call setreg('+',getline('.')) \| call setreg('l',getline('.')) \| call writefile([getline('.')], $HOME.'/.config/reg/filel')  \| write! $HOME/.config/reg/filef
 " cabbrev swq  :execute('write! $HOME/.config/reg/fileb') \| execute('g/^[\s\t]*#/d') \| execute('wqa')
-cabbrev sw  :write! $HOME/.config/reg/fileb \| g/^\s*#/d
-cabbrev y4l  call writefile([getline('.')], $HOME.'/.config/reg/filel') \| call setreg('+',getline('.')) \| call setreg('l',getline('.'))
-cabbrev y4r  call writefile(getreg('"', 1, 1), $HOME.'/.config/reg/fileu')
+" cabbrev sw  :write! $HOME/.config/reg/fileb \| g/^\s*#/d
+" cabbrev y4l  call writefile([getline('.')], $HOME.'/.config/reg/filel') \| call setreg('+',getline('.')) \| call setreg('l',getline('.'))
 " yark file path
-cabbrev yfp   call writefile([expand("%:p")],   $HOME."/.config/reg/filep") <Bar> call system('printf "'. expand("%:p") . '" \|pbcopy \|xsel -i -b ')
+cabbrev yp2   call writefile([expand("%:p")],   $HOME."/.config/reg/filep") <Bar> call system('printf "'. expand("%:p") . '" \|pbcopy \|xsel -i -b ')
 " yark file directory
-cabbrev yfd   call writefile([expand("%:p:h")], $HOME."/.config/reg/filep") <Bar> call system('printf "'. expand("%:p:h") . '" \|pbcopy \|xsel -i -b ')
+cabbrev yd2   call writefile([expand("%:p:h")], $HOME."/.config/reg/filep") <Bar> call system('printf "'. expand("%:p:h") . '" \|pbcopy \|xsel -i -b ')
 " yark the path
 cabbrev ypwd  call writefile([getcwd()], $HOME."/.config/reg/filep")        <Bar> call system('printf "'. getcwd() . '" \|pbcopy')
 " copy to register
 cabbrev yr2  call writefile(getreg('"', 1, 1), $HOME."/.config/reg/filer")
+
 cabbrev y2r  call system('xsel -i -b ', @")
 " copy to clipboard
 cabbrev y2x  .write !xsel -i -b
